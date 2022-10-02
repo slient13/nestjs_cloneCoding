@@ -16,6 +16,10 @@
   - [3.2 testing getall and getone](#32-testing-getall-and-getone)
   - [3.3 testing delete and create](#33-testing-delete-and-create)
   - [3.4 testing update](#34-testing-update)
+  - [4.0 testing movies](#40-testing-movies)
+  - [4.1 testing GET movies id](#41-testing-get-movies-id)
+  - [4.2 testing PATCH and DELETE movies id](#42-testing-patch-and-delete-movies-id)
+  - [4.3 finishing up](#43-finishing-up)
 
 # 개요
 본 강의를 진행하면서 무엇을 하였는지를 기록하는 문서이다. 어떠한 과정을 거치며 학습에 임했는지를 파악할 수 있도록 도우며, 유사시 복구를 위해 사용된다.
@@ -181,3 +185,55 @@
 - jest 실행. 결과: 성공
 - 명령: `npm run test:cov`
   - `movies/movies.service.spec.ts` 파일에 의해 `movies/movies.service.ts`에 정의된 모든 함수가 테스트됨을 확인.
+
+## 4.0 testing movies
+- 명령: `npm run test:e2e` // 이하 **확인**으로 명시
+  - 결과: 실패. 사유: { 접근: `/`, 기대: `response body = "Hello World!"`, 결과: `response body = "Welcome to my Movie API"`
+- 수정: `test/app.e2e-spec.ts`
+  - `.expect('Hello World!');` -> `.expect('Welcome to my Movie API');`
+- 확인: `{ 결과: 성공 }`
+- 수정: `test/app.e2e-spec.ts`
+  - it 추가: `/movies (GET)` 테스트 추가. `{ 기대값: [ 200, [] ] }` // 참고: 200 = `OK`
+- 확인: `{ 결과: 성공 }`
+- 수정: `test/app.e2e-spec.ts`
+  - describe 추가: `/movies`
+  - it 이동: `it("/movies (GET)")` -> `describe("/movies") { it("GET") }`
+  - 수정: `describe("movies")`
+    - it 추가: `POST`. `{ 입력: [ POST, { title: ..., year: ... genres: ... } ], 기대값: [ 201 ] }` // 참고: 201 = `Created`
+- 확인: `{ 결과: 성공 }`
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")/describe("/movies")`
+  - it 추가: `DELETE without id > 404`. `{ 입력: [ DELETE ], 기대값: [ 404 ]}` // 참고: 404 = `Not Found`
+- 확인: `{ 결과: 성공 }`
+
+## 4.1 testing GET movies id
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")`
+  - 변경: `beforeEach(...)` -> `beforeAll(...)`
+  - 수정: `beforeAll(...)`
+    - `app`에 `main.ts`에 적용해두었던 파이프라인을 연결해줌.
+- 수정: `/describe("/movies")`
+  - 추가: `it.todo("GET with id");`
+- 확인: `{ 결과: 성공, 비고: "연필 아이콘이 붙은 'todo Get with id' 출력도 확인됨" }`
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")/describe("/movies")`
+  - 변경: `it.todo("GET with id");`  -> `it('GET with currect id > 200', () => { ... });`. `{ 입력: "/movies/1", 기대값: 200 }`
+- 확인: `{ 결과: 성공 }`
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")/describe("/movies")`
+  - 추가: `it('GET with incorrect id > 404', () => { ... });`. `{ 입력: "/movies/-1", 기대값: 404 }`
+- 확인: `{ 결과: 성공 }`
+
+## 4.2 testing PATCH and DELETE movies id
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")/describe("/movies")`
+  - 추가: `it('PATCH with correct id and correct data', ...)`. `{ 입력: [ "/movies/1", { title: ..., year: ..., genres: ... }, 기대값: 200 ]}`
+  - 추가: `it('PATCH with incorrect id', ...)`. `{ 입력: [ "/movies/-1", { title: ..., year: ..., genres: ... }, 기대값: 404 ]}`
+  - 추가: `it('PATCH without id', ...)`. `{ 입력: [ "/movies", { title: ..., year: ..., genres: ... }, 기대값: 404 ]}`
+  - 추가: `it('PATCH with sub data(title)', ...)`. `{ 입력: [ "/movies", { title: ... }, 기대값: 200 ]}`
+  - 추가: `it('PATCH with sub data(year)', ...)`. `{ 입력: [ "/movies", { year: ... }, 기대값: 200 ]}`
+  - 추가: `it('PATCH with sub data(genres)', ...)`. `{ 입력: [ "/movies", { genres: ... }, 기대값: 200 ]}`
+  - 추가: `it('PATCH with not allowed data', ...)`. `{ 입력: [ "/movies", { title: ..., year: ..., genres: ..., hack: ... }, 기대값: 400 ]}` // 참고: 400 = `Bad Request`
+- 확인: `{ 결과: 성공 }`
+- 수정: `test/app.e2e-spec.ts/describe("AppController (e2e)")/describe("/movies")`
+  - 추가: `it('DELETE with currect id > 200', ...)`. `{ 입력: "/movies/1", 기대값: 200 }`
+  - 추가: `it('DELETE with incurrect id > 404', ...)`. `{ 입력: "/movies/-1", 기대값: 404 }`
+- 확인: `{ 결과: 성공 }`
+
+## 4.3 finishing up
+- 수정사항 없음.

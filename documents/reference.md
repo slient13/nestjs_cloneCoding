@@ -24,6 +24,8 @@
       - [afterEach](#aftereach)
       - [beforeAll](#beforeall)
       - [afterAll](#afterall)
+    - [test/app.e2e-spec.ts](#testappe2e-spects)
+    - [참고](#참고)
 - [기타 라이브러리](#기타-라이브러리)
   - [nestcli](#nestcli)
   - [@nestjs/mapped-types](#nestjsmapped-types)
@@ -108,7 +110,7 @@
 javascript 환경에서 테스트를 지원하는 라이브러리이다. javascript 뿐만 아나라, typescript, babel, node.js, react, angular, ...와 같은 javascript-family 환경에서 모두 테스트를 지원해준다. 
 
 ### $.spec.ts
-jest 에서 실행할 테스트 목록을 정의한 파일.
+**jest**를 이용한 unit test 에서 실행할 테스트 목록을 정의한 파일.
 
 #### describe
 ```ts
@@ -126,6 +128,8 @@ describe($test_group_name: string, () => {
 `it($test_case_name: string, () -> { $test_contents })`
 
 특정 모듈에 대한 개별 유닛 테스트를 지정한 것. `$test_function`의 결과물에 따라 테스트 성공 여부를 판단한다.
+
+`it.todo($message)` // 테스트 해야 하는 항목을 메모할 때 사용한다. 별도의 테스트를 수행하지는 않지만 출력창에서 연필 모양으로 표시된다.
 
 ##### test-function
 - `expect($test_target)` // 테스트하고자 하는 값을 지정한다. 이는 보통 함수의 결과값으로 지정한다.
@@ -145,6 +149,17 @@ describe($test_group_name: string, () => {
 
 #### afterAll
 `describe` 내 `it`들의 테스트를 완료한 후 지정한 함수를 실행한다. `beforeAll`로 생성한 임시 데이터를 테스트 종료 후 제거할 때 등 사용한다.
+
+
+### test/app.e2e-spec.ts
+**end to end test**를 위해 사용되는 파일으로 nestjs 프로젝트 생성 시 `test` 파일 아래 기본 제공된다. `npm run test:e2e` 명령을 통해 해당 파일에 정의된 **e2e test case**를 확인할 수 있다.
+
+`describe`, `it` 등은 `$.spec.ts`와 동일하다. 
+
+### 참고
+test 시 생성되는 **app**은 디버그나 서비스용으로 생성한 어플리케이션과 전혀 다른 객체이다. 때문에 만약 `main.ts`에서 **app**에 별도의 파이프라인을 연결해두었다면 테스트 환경에서도 이를 연결해주어야만 동일한 결과를 볼 수 있다. 
+
+그 외 기본 코드는 매 **it**마다 새로 앱을 생성하도록 설정되어 있는데, 이것이 필요치 않다면 `beforeEach -> beforeAll`으로 바꿔주는 것으로 효율을 챙길 수 있다.
 
 # 기타 라이브러리
 ## nestcli
