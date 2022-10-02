@@ -11,6 +11,11 @@
   - [2.5 DTOs and validation part 2](#25-dtos-and-validation-part-2)
   - [2.6 Modules and dependency injection](#26-modules-and-dependency-injection)
   - [2.7 Express on nestjs](#27-express-on-nestjs)
+  - [3.0 introduction to testing in nest](#30-introduction-to-testing-in-nest)
+  - [3.1 your first unit test](#31-your-first-unit-test)
+  - [3.2 testing getall and getone](#32-testing-getall-and-getone)
+  - [3.3 testing delete and create](#33-testing-delete-and-create)
+  - [3.4 testing update](#34-testing-update)
 
 # 개요
 본 강의를 진행하면서 무엇을 하였는지를 기록하는 문서이다. 어떠한 과정을 거치며 학습에 임했는지를 파악할 수 있도록 도우며, 유사시 복구를 위해 사용된다.
@@ -124,3 +129,55 @@
 
 ## 2.7 Express on nestjs
 - 수정사항 없음.
+
+## 3.0 introduction to testing in nest
+- 수정사항 없음.
+
+## 3.1 your first unit test
+- 수정: `movies/movies.service.spec.ts`
+  - 추가: `it("= 4", () => expect(2+3).toEqual(4) )`
+- jest 실행. 결과: 실패
+  - 수정: `it("= 4", () => expect(2+2).toEqual(4) )`
+- jest 실행. 결과: 성공
+  - 제거: `it("= 4", ...)`
+
+## 3.2 testing getall and getone
+- 수정: `movies/movies.service.spec.ts`
+  - describe 추가: **getAll**
+    - it 추가: **should return an array**
+      - `const result = service.getAll()`
+      - `expect(result).toBeInstanceOf(Array)`
+- jest 실행. 결과: 성공
+수정: `movies/movies.service.spec.ts`
+  - describe 추가: **getOne**
+    - 임시 데이터 생성 코드 추가
+    - it 추가: `id = 1`인 데이터를 조회했을 때 결과가 존재하면 성공, 존재하지 않으면 실패.
+    - it 추가: `id = -1`인 데이터를 조회했을 때 예외가 발생하면 성공, 그렇지 않으면 실패.
+- jest 실행. 결과: 성공
+
+## 3.3 testing delete and create
+- 수정: `movies/movies.service.spec.ts`
+  - describe 추가: **deleteOne**
+    - it 추가: `id = 1`인 데이터를 삭제했을 때 데이터 목록의 길이가 줄어있으면 성공, 존재하지 않으면 실패.
+    - it 추가: `id = -1`인 데이터를 삭제했을 때 예외가 발생하면 성공, 그렇지 않으면 실패.
+  - describe 추가: **create**
+    - it 추가: `CreateMoviesDTO` 규격에 맞춘 입력을 넣었을 때 총 목록 숫자가 1 증가하면 성공, 그렇지 않으면 실패.
+- jest 실행. 결과: 성공
+- 수정: `movies/movies.service.spec.ts`
+  - describe 추가: **create**
+    - it 추가 시도: `CreateMoviesDTO` 규격에 맞지 않는 입력을 테스트 케이스로 넣으려고 시도. -> typescript에서 비정상적인 입력 자체를 오류로 감지해서 항시 실패가 발생.
+
+## 3.4 testing update
+- 수정: `movies/movies.service.spec.ts`
+  - describe 추가: **update**
+    - it 추가: `CreateMoviesDTO`의 모든 데이터를 제공했을 때 모든 데이터가 변경되면 성공, 아니면 실패.
+    - it 추가: `CreateMoviesDTO.title`에 해당하는 데이터만 제공했을 때 `title`만 변경되면 성공, 변경되지 않거나 다른 것도 변경되면 실패.
+    - it 추가: `CreateMoviesDTO.year`에 해당하는 데이터만 제공했을 때 `year`만 변경되면 성공, 변경되지 않거나 다른 것도 변경되면 실패.
+    - it 추가: `CreateMoviesDTO.genres`에 해당하는 데이터만 제공했을 때 `genres`만 변경되면 성공, 변경되지 않거나 다른 것도 변경되면 실패.
+- jest 실행. 결과: 성공
+- 수정: `movies/movies.service.spec.ts`
+  - describe 추가: **update**
+    - it 추가: `id = -1`인 대상을 변경하려고 시도했을 때 `NotFoundException`이 발생하면 성공, 아니면 실패.
+- jest 실행. 결과: 성공
+- 명령: `npm run test:cov`
+  - `movies/movies.service.spec.ts` 파일에 의해 `movies/movies.service.ts`에 정의된 모든 함수가 테스트됨을 확인.

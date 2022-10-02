@@ -6,12 +6,24 @@
     - [기본 파일](#기본-파일)
   - [object](#object)
   - [decorator](#decorator)
+- [package](#package)
+  - [script](#script)
+    - [test](#test)
 - [기타 정보](#기타-정보)
   - [관련 용어나 기법](#관련-용어나-기법)
     - [dependency injection](#dependency-injection)
   - [insumnia](#insumnia)
   - [RESTful API](#restful-api)
   - [fastify](#fastify)
+  - [jest](#jest)
+    - [$.spec.ts](#spects)
+      - [describe](#describe)
+      - [it](#it)
+        - [test-function](#test-function)
+      - [beforeEach](#beforeeach)
+      - [afterEach](#aftereach)
+      - [beforeAll](#beforeall)
+      - [afterAll](#afterall)
 - [기타 라이브러리](#기타-라이브러리)
   - [nestcli](#nestcli)
   - [@nestjs/mapped-types](#nestjsmapped-types)
@@ -59,6 +71,15 @@
   - `@Patch($url)` // patch 요청에 대응하는 함수를 지정하는 decorator. 이외의 특성은 `@Post($url)`과 동일하다.
   - `@Delete($url)` // delete 요청에 대응하는 함수를 지정하는 decorator. 이외의 특성은 `@Post($url)`과 동일하다.
 
+# package
+## script
+### test
+- test // 일반적인 jest 실행
+- test:watch // `jest --watch`를 실행함. 상호작용 모드로 테스트 실행
+- test:cov // `jest --coverage`를 실행함
+- test:debug // 유닛 테스팅을 할 때 사용.
+- test:e2e // end-to-end 테스팅을 할 때 사용.
+
 # 기타 정보
 ## 관련 용어나 기법
 ### dependency injection
@@ -82,6 +103,48 @@
 
 ## fastify
 **express**와 유사하지만 2배의 속도로 구동되는 프레임워크이다. **nestjs**는 이 두개의 프레임워크 위에서 구동될 수 있다.
+
+## jest
+javascript 환경에서 테스트를 지원하는 라이브러리이다. javascript 뿐만 아나라, typescript, babel, node.js, react, angular, ...와 같은 javascript-family 환경에서 모두 테스트를 지원해준다. 
+
+### $.spec.ts
+jest 에서 실행할 테스트 목록을 정의한 파일.
+
+#### describe
+```ts
+describe($test_group_name: string, () => {
+  describe($sub_test_group_name: string, () => { $sub_test_contents_list })
+  ...
+  it($test_case_name: string, () => { $test_contents })
+  ...
+})
+```
+
+테스트 그룹을 명시한 파일. 다른 `describe`를 하위 그룹으로 포함할 수도 있다.
+
+#### it
+`it($test_case_name: string, () -> { $test_contents })`
+
+특정 모듈에 대한 개별 유닛 테스트를 지정한 것. `$test_function`의 결과물에 따라 테스트 성공 여부를 판단한다.
+
+##### test-function
+- `expect($test_target)` // 테스트하고자 하는 값을 지정한다. 이는 보통 함수의 결과값으로 지정한다.
+- `expect($test_target).toEqual($expect_value)` // `$test_target === $expect_value`이면 성공, 아니면 실패한다.
+- `expect($test_target).toBeLessThan($value)` // `$test_target < $value`이면 성공, 아니면 실패한다.
+- `expect($test_target).toBeDefined()` // `$test_target !== undefined`이면 성공, 아니면 실패한다.
+- `expect($test_target).toBeInstanceOf($target)` // `$test_target`이 `$target`의 instance 이면 성공, 아니면 실패한다.
+
+#### beforeEach
+`describe` 내 각각의 `it`들을 테스트하기 전 실행하는 동작을 지정한다.
+
+#### afterEach
+`describe` 내 각각의 `it`들을 테스트 한 후 실행하는 동작을 지정한다.
+
+#### beforeAll
+`describe` 내 `it`들의 테스트를 시작하기 전에 지정한 함수를 먼저 실행한다. 테스트용 임시 데이터를 생성하는 코드 등이 들어간다.
+
+#### afterAll
+`describe` 내 `it`들의 테스트를 완료한 후 지정한 함수를 실행한다. `beforeAll`로 생성한 임시 데이터를 테스트 종료 후 제거할 때 등 사용한다.
 
 # 기타 라이브러리
 ## nestcli
